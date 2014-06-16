@@ -1,0 +1,5 @@
+bottle==0.12.7
+osmapi==0.3.0
+psycopg2==2.5.3
+requests==2.3.0
+pymongo

@@ -49,7 +49,14 @@ class OverpassApi(object):
         </osm-script>
         """ % (bbox["south"], bbox["west"], bbox["north"], bbox["east"])
 
-        return self.__format_api_result(requests.post(self.__overpass_api_url, data={"data": query}).json()["elements"])
+        #calculate centroid of boundingbox for result sorting
+        location = calculate_centroid([[bbox["south"],bbox["west"]], [bbox["south"], bbox["east"]], [bbox["north"], bbox["east"]], [bbox["north"], bbox["west"]]])
+
+        results = self.__format_api_result(requests.post(self.__overpass_api_url, data={"data": query}).json()["elements"])
+        results = self.__calculate_distance(results, location)
+        return self.__sort_by_distance(results)
+
+
 
 
     def get_buildings_without_housenumber_nearby(self, lat: float, lon: float, radius: int) -> list:
@@ -89,7 +96,9 @@ class OverpassApi(object):
         for key,value in enumerate(results):
             results[key]["distance"] = geo_distance(lat,lon,value["centroid"]["lat"],value["centroid"]["lon"])
 
-        return results
+        results = self.__calculate_distance(results, {"lat": lat , "lon": lon})
+
+        return self.__sort_by_distance(results)
 
 
     def __format_api_result(self, data: list) -> list:
@@ -121,9 +130,33 @@ class OverpassApi(object):
 
             way["nodes"] = temp_nodes
             way["centroid"] = calculate_centroid(temp_nodes)
-            print(way["centroid"])
             result.append(way)
 
         return result
 
+
+    def __calculate_distance(self, results: list, location: dict) -> list:
+        """Adds the distance to the resultset
+            :Parameters:
+                - `results` - a resultlist
+                - `location` - the location for distance calculation
+
+            :Returns:
+                A `list` of results with a distance parameter
+        """
+        for key,value in enumerate(results):
+            results[key]["distance"] = geo_distance(location["lat"],location["lon"],value["centroid"]["lat"],value["centroid"]["lon"])
+
+        return results
+
+
+    def __sort_by_distance(self, results: list) -> list:
+        """Sorts the resultsset by distance
+            :Parameters:
+                - `results` - A resultlist
+            :Returns:
+                A sorted `list` of results
+        """
+
+        return sorted(results, key=lambda k: k['distance']) 
 

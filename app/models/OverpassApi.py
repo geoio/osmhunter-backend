@@ -1,6 +1,13 @@
 import json
+import sys
+import os
 
 import requests
+
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+from helpers.geo_helpers import calculate_centroid, geo_distance
+
 
 
 class OverpassApi(object):
@@ -77,7 +84,12 @@ class OverpassApi(object):
         </osm-script>
         """ % (lat, lon, radius)
 
-        return self.__format_api_result(requests.post(self.__overpass_api_url, data={"data": query}).json()["elements"])
+        results = self.__format_api_result(requests.post(self.__overpass_api_url, data={"data": query}).json()["elements"])
+
+        for key,value in enumerate(results):
+            results[key]["distance"] = geo_distance(lat,lon,value["centroid"]["lat"],value["centroid"]["lon"])
+
+        return results
 
 
     def __format_api_result(self, data: list) -> list:
@@ -108,6 +120,8 @@ class OverpassApi(object):
 
 
             way["nodes"] = temp_nodes
+            way["centroid"] = calculate_centroid(temp_nodes)
+            print(way["centroid"])
             result.append(way)
 
         return result

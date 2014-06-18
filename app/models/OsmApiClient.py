@@ -23,7 +23,7 @@ class OsmApiClient(object):
 
 
 	def update_way(self, id: int, tags: dict):
-		"""Simple update method to update ways
+		"""Simple method to update ways
 		:Parameters:
 			- `id` - osm id of way
 			- `tags` - the new tags for this way

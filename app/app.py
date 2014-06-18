@@ -87,12 +87,14 @@ def get_buildings_nearby():
         - `lon` - longitude 
         - `radius` - the searchradius in meters
         - `limit` - max of shapes
+        - `offset` - offset to skip
 
     """
 
     latitude =  request.query.getunicode("lat")
     longitude =  request.query.getunicode("lon")
     radius =  request.query.getunicode("radius")
+    offset = request.query.getunicode("offset")
 
 
     if not latitude:
@@ -100,6 +102,11 @@ def get_buildings_nearby():
 
     if not longitude:
         return APIError(body="need param lon")
+
+    if not offset:
+        offset = 0
+
+    offset = int(offset)
 
     latitude = float(latitude)
     longitude = float(longitude)
@@ -123,7 +130,7 @@ def get_buildings_nearby():
         limit = 999
 
     results = overpass.get_buildings_without_housenumber_nearby(latitude, longitude, radius)
-    return {"status": "OK", "results": results[:limit]}
+    return {"status": "OK", "results": results[offset:limit]}
 
 
 

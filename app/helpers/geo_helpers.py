@@ -1,11 +1,11 @@
 import itertools
 from math import cos,radians,sin,pow,asin,sqrt
- 
+
 
 def calculate_centroid(shape: list) -> dict:
     """Find the centroid of a shape
         :Parameters:
-        - `shape` -a list of lat/lon coordinates
+        - `shape` -a list of lat/lon dicts a
     """
 
     points = []

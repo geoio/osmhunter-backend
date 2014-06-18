@@ -50,7 +50,7 @@ class OverpassApi(object):
         """ % (bbox["south"], bbox["west"], bbox["north"], bbox["east"])
 
         #calculate centroid of boundingbox for result sorting
-        location = calculate_centroid([[bbox["south"],bbox["west"]], [bbox["south"], bbox["east"]], [bbox["north"], bbox["east"]], [bbox["north"], bbox["west"]]])
+        location = calculate_centroid([{"lat": float(bbox["south"]),"lon": float(bbox["west"])}, {"lat": float(bbox["south"]), "lon": float(bbox["east"])}, {"lat": float(bbox["north"]), "lon": float(bbox["east"])}, {"lat": float(bbox["north"]), "lon": float(bbox["west"])}])
 
         results = self.__format_api_result(requests.post(self.__overpass_api_url, data={"data": query}).json()["elements"])
         results = self.__calculate_distance(results, location)

@@ -119,7 +119,7 @@ def get_buildings_nearby():
 
 
 
-@app.route('/building/<id>', ['GET'])
+@app.route('/buildings/<id>', ['GET'])
 def get_building(id: int):
     """GET a building by id
         :Parameters:
@@ -133,7 +133,7 @@ def get_building(id: int):
     return {"status": "OK", "result": api.get_way(id)}
     
 
-@app.route('/building/<id>', ['PUT'])
+@app.route('/buildings/<id>', ['PUT'])
 def update_building(id: int):
     """GET a building by id
         :Parameters:

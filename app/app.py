@@ -130,7 +130,11 @@ def get_buildings_nearby():
         limit = 999
 
     results = overpass.get_buildings_without_housenumber_nearby(latitude, longitude, radius)
-    return {"status": "OK", "results": results[offset:limit + offset]}
+    results = results[offset:limit + offset]
+    if len(results) < 1:
+        return {"status": "ZERO_RESULTS"}
+    else:
+        return {"status": "OK", "results": results}
 
 
 

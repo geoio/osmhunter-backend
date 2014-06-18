@@ -1,5 +1,8 @@
 import itertools
 from math import cos,radians,sin,pow,asin,sqrt
+import json
+
+import requests
 
 
 def calculate_centroid(shape: list) -> dict:
@@ -61,3 +64,8 @@ def geo_distance(lat1, long1, lat2, long2):
     distance = 2 * radius * asin(sqrt(a))
 
     return distance
+
+
+def reverse_geocode(lat, lon):
+    """Reversgeocode an adress atm. by using Nominatim"""
+    return requests.get("http://nominatim.openstreetmap.org/reverse?format=json&lat=%s&lon=%s&osm_type=way&email=felix@geo.io" % (lat, lon)).json()["address"]

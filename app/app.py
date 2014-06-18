@@ -3,6 +3,7 @@ import settings
 
 from bottle import route, run, template, Bottle, request, static_file
 
+from helpers.geo_helpers import reverse_geocode
 from helpers.json_serializer import JSONAPIPlugin
 from helpers.utils import APIError
 from models.OsmApiClient import OsmApiClient
@@ -47,13 +48,18 @@ def get_buildings():
 
     """
 
-    bbox = {"north": request.query.getunicode("north"), "south": request.query.getunicode("south"), "east": request.query.getunicode("east"), "west": request.query.getunicode("west")}
+    bbox = {"north": request.query.getunicode("north"), "south": request.query.getunicode("south"), "easteast": request.query.getunicode("east"), "westwest": request.query.getunicode("west")}
 
     if bbox["north"] and bbox["south"] and bbox["east"] and bbox["west"]:
         pass
     else:
         return APIError(body="need bbox (params north, south, east, west)")
 
+    request["north"] = float(request["north"])
+    request["south"] = float(request["south"])
+    request["east"] = float(request["east"])
+    request["west"] = float(request["west"])
+    
     limit = request.query.getunicode("limit")
 
     if limit is None:
@@ -84,8 +90,8 @@ def get_buildings_nearby():
 
     """
 
-    latitude =  float(request.query.getunicode("lat"))
-    longitude =  float(request.query.getunicode("lon"))
+    latitude =  request.query.getunicode("lat")
+    longitude =  request.query.getunicode("lon")
     radius =  request.query.getunicode("radius")
 
 
@@ -95,6 +101,8 @@ def get_buildings_nearby():
     if not longitude:
         return APIError(body="need param lon")
 
+    latitude = float(latitude)
+    longitude = float(longitude)
 
     if not radius:
         radius = 300
@@ -160,6 +168,25 @@ def update_building(id: int):
         raise APIError("Invalid request")
 
     return {"status": "OK", "result": api.update_building(id, request_body)}
+
+
+@app.route('/reverse-geocode/')
+def reverse_geocode_api():
+    """Reverse Geocode a shape, to prefill fields like street and city
+        :Parameters:
+            - `lat` - Latitude
+            - `lon` - Longitude
+    """
+    latitude =  request.query.getunicode("lat")
+    longitude =  request.query.getunicode("lon")
+    if not latitude:
+        return APIError(body="need param lat")
+
+    if not longitude:
+        return APIError(body="need param lon")
+    latitude = float(latitude)
+    longitude = float(longitude)
+    return {"status": "OK", "result": reverse_geocode(latitude, longitude)}
     
 
 

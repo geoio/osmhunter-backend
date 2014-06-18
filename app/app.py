@@ -55,10 +55,10 @@ def get_buildings():
     else:
         return APIError(body="need bbox (params north, south, east, west)")
 
-    request["north"] = float(request["north"])
-    request["south"] = float(request["south"])
-    request["east"] = float(request["east"])
-    request["west"] = float(request["west"])
+    bbox["north"] = float(bbox["north"])
+    bbox["south"] = float(bbox["south"])
+    bbox["east"] = float(bbox["east"])
+    bbox["west"] = float(bbox["west"])
 
     limit = request.query.getunicode("limit")
 

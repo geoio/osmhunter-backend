@@ -48,7 +48,7 @@ def get_buildings():
 
     """
 
-    bbox = {"north": request.query.getunicode("north"), "south": request.query.getunicode("south"), "easteast": request.query.getunicode("east"), "westwest": request.query.getunicode("west")}
+    bbox = {"north": request.query.getunicode("north"), "south": request.query.getunicode("south"), "east": request.query.getunicode("east"), "west": request.query.getunicode("west")}
 
     if bbox["north"] and bbox["south"] and bbox["east"] and bbox["west"]:
         pass
@@ -59,7 +59,7 @@ def get_buildings():
     request["south"] = float(request["south"])
     request["east"] = float(request["east"])
     request["west"] = float(request["west"])
-    
+
     limit = request.query.getunicode("limit")
 
     if limit is None:

@@ -24,9 +24,9 @@ class FormGenerator(object):
 
 
 	OSM_TO_NOMINATIM_MAPPING = {
-		"addr:street": "road",
-		"addr:city": "city",
-		"addr:postcode": "postcode",
+		"addr:street": ["road"],
+		"addr:city":  ["village", "town", "city"],
+		"addr:postcode": ["postcode"],
 
 	}
 
@@ -74,8 +74,10 @@ class FormGenerator(object):
 				the value or `None`
 		"""
 
-		if key in self.OSM_TO_NOMINATIM_MAPPING and self.OSM_TO_NOMINATIM_MAPPING[key] in self.location["address"]:
-			return self.location["address"][self.OSM_TO_NOMINATIM_MAPPING[key]]
+		if key in self.OSM_TO_NOMINATIM_MAPPING:
+			for nominatim_key in self.OSM_TO_NOMINATIM_MAPPING[key]:
+				if nominatim_key in self.location["address"]:
+					return self.location["address"][nominatim_key]
 
 		return None
 

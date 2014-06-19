@@ -3,6 +3,7 @@ import settings
 
 from bottle import route, run, template, Bottle, request, static_file
 
+from classes.FormGenerator import FormGenerator
 from helpers.geo_helpers import reverse_geocode
 from helpers.json_serializer import JSONAPIPlugin
 from helpers.utils import APIError
@@ -132,13 +133,13 @@ def get_buildings_nearby():
     results = overpass.get_buildings_without_housenumber_nearby(latitude, longitude, radius)
     results = results[offset:limit + offset]
     if len(results) < 1:
-        return {"status": "ZERO_RESULTS"}
+        return {"status": "ZERO_RESULTS", "results": []}
     else:
         return {"status": "OK", "results": results}
 
 
 
-@app.route('/buildings/<id>', ['GET'])
+@app.route('/buildings/<id>/', ['GET'])
 def get_building(id: int):
     """GET a building by id
         :Parameters:
@@ -150,9 +151,23 @@ def get_building(id: int):
     #TODO(felix): implement a serious authentication like oauth
     api = OsmApiClient(request.query.getunicode("username"), request.query.getunicode("password"))
     return {"status": "OK", "result": api.get_way(id)}
+
+
+@app.route('/buildings/<id>/edit/', ['GET'])
+def get_building_form(id: int):
+    """GET the edit form for a building
+        :Parameters:
+        - `id` - the osm id of the building
+    """
+    
+    way = overpass.get_by_osm_id(id)
+    logger.debug("way: %s" % way)
+    form = FormGenerator(settings.EDIT_FIELDS, way)
+    
+    return {"status": "OK", "result": form.generate()}
     
 
-@app.route('/buildings/<id>', ['PUT'])
+@app.route('/buildings/<id>/', ['PUT'])
 def update_building(id: int):
     """GET a building by id
         :Parameters:

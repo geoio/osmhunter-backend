@@ -35,7 +35,6 @@ class OverpassApi(object):
         query = """
         <osm-script output="json" timeout="25">
           <union>
-            <!-- query part for: “building=*” -->
             <query type="way">
               <has-kv k="building"/>
               <has-kv k="addr:housenumber" modv="not" regv="."/>
@@ -77,7 +76,6 @@ class OverpassApi(object):
         query = """
             <osm-script output="json" timeout="25" >
           <union>
-            <!-- query part for: “building=*” -->
             <query type="way">
               <has-kv k="building"/>
               <has-kv k="addr:housenumber" modv="not" regv="."/>
@@ -93,12 +91,25 @@ class OverpassApi(object):
 
         results = self.__format_api_result(requests.post(self.__overpass_api_url, data={"data": query}).json()["elements"])
 
-        for key,value in enumerate(results):
-            results[key]["distance"] = geo_distance(lat,lon,value["centroid"]["lat"],value["centroid"]["lon"])
-
         results = self.__calculate_distance(results, {"lat": lat , "lon": lon})
 
         return self.__sort_by_distance(results)
+
+
+
+    def get_by_osm_id(self, osm_id):
+        query = """
+        <osm-script output="json" timeout="25">
+          <id-query ref="%s" type="way"/>
+          <print/>
+          <print mode="body"/>
+          <recurse type="down"/>
+          <print mode="skeleton" order="quadtile"/>
+        </osm-script>
+        """ % (osm_id)
+
+        return self.__format_api_result(requests.post(self.__overpass_api_url, data={"data": query}).json()["elements"])[0]
+
 
 
     def __format_api_result(self, data: list) -> list:

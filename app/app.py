@@ -144,16 +144,13 @@ def get_building(id: int):
     """GET a building by id
         :Parameters:
         - `id` - the osm id of the building
-        - `username` - openstreetmap.org username
-        - `password` - openstreetmap.org password
     """
 
-    #TODO(felix): implement a serious authentication like oauth
-    api = OsmApiClient(request.query.getunicode("username"), request.query.getunicode("password"))
-    return {"status": "OK", "result": api.get_way(id)}
+    way = overpass.get_by_osm_id(id)
+    return {"status": "OK", "result": way }
 
 
-@app.route('/buildings/<id>/edit/', ['GET'])
+@app.route('/buildings/<id>/edit-form/', ['GET'])
 def get_building_form(id: int):
     """GET the edit form for a building
         :Parameters:
@@ -161,7 +158,6 @@ def get_building_form(id: int):
     """
     
     way = overpass.get_by_osm_id(id)
-    logger.debug("way: %s" % way)
     form = FormGenerator(settings.EDIT_FIELDS, way)
     
     return {"status": "OK", "result": form.generate()}
@@ -178,7 +174,7 @@ def update_building(id: int):
     """
 
     #TODO(felix): implement a serious authentication like oauth
-    api = OsmApiClient(request.query.getunicode("username"), request.query.getunicode("password"))
+    way = overpass.get_by_osm_id(id)
     
     data = request.body.read()
 

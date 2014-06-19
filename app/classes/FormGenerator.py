@@ -92,7 +92,7 @@ class FormGenerator(object):
 				true if the option is in the list else false
  		"""
 		for option in options :
-			if value is option["value"]:
+			if value == option["value"]:
 				return True
 
 		return False 

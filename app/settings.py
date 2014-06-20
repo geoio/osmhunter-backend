@@ -113,8 +113,8 @@ EDIT_FIELDS = [
 				"label": "residential",
 			},
 			{
-				"value": "building",
-				"label": "building",
+				"value": "yes",
+				"label": "yes",
 			},
 			{
 				"value": "cafe",

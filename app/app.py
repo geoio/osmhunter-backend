@@ -175,7 +175,13 @@ def update_building(id: int):
     """
 
     #TODO(felix): implement a serious authentication like oauth
-    api = OsmApiClient(request.query.getunicode("username"), request.query.getunicode("password"))
+    username = request.query.getunicode("username")
+    password = request.query.getunicode("password")
+
+    if not username or not password:
+        return APIError(body="Need params username and password")
+
+    api = OsmApiClient(username, password)
 
     way = overpass.get_by_osm_id(id)
     
@@ -192,8 +198,14 @@ def update_building(id: int):
     if type(request_body) is not dict:
         raise APIError("Invalid request")
 
-    
-    return {"status": "OK", "result": api.update_way(id, request_body)}
+
+    try:
+        result = api.update_way(id, request_body)
+    except Exception e:
+        raise APIError("Unknown error while saving") 
+
+
+    return {"status": "OK", "result": result}
 
 
 @app.route('/reverse-geocode/')

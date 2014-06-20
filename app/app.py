@@ -202,7 +202,7 @@ def update_building(id: int):
     try:
         result = api.update_way(id, request_body)
     except e:
-        raise APIError("Unknown error while saving: %s" % e.message) 
+        raise APIError("Unknown error while saving: %s" % str(e)) 
 
 
     return {"status": "OK", "result": result}

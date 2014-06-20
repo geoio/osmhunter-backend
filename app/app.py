@@ -1,4 +1,5 @@
 import logging
+import json
 import settings
 
 from bottle import route, run, template, Bottle, request, static_file
@@ -174,9 +175,11 @@ def update_building(id: int):
     """
 
     #TODO(felix): implement a serious authentication like oauth
+    api = OsmApiClient(request.query.getunicode("username"), request.query.getunicode("password"))
+
     way = overpass.get_by_osm_id(id)
     
-    data = request.body.read()
+    data = request.body.read().decode("utf-8")
 
     if not data:
         raise APIError("No data received")
@@ -189,7 +192,8 @@ def update_building(id: int):
     if type(request_body) is not dict:
         raise APIError("Invalid request")
 
-    return {"status": "OK", "result": api.update_building(id, request_body)}
+    
+    return {"status": "OK", "result": api.update_way(id, request_body)}
 
 
 @app.route('/reverse-geocode/')

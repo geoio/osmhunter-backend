@@ -143,12 +143,12 @@ EDIT_FIELDS = [
 
 DB_CONNECTION = "sqlite:///test.db"
 
-
-OSM_OAUTH = OAuth1Service(
-    name='osm',
-    consumer_key='',
-    consumer_secret='',
-    request_token_url='http://www.openstreetmap.org/oauth/request_token',
-    access_token_url='http://www.openstreetmap.org/oauth/access_token',
-    authorize_url='http://www.openstreetmap.org/oauth/authorize',
-    base_url='http://api.openstreetmap.org/api/0.6')
+def get_osm_auth():
+    return OAuth1Service(
+        name='osm',
+        consumer_key='',
+        consumer_secret='',
+        request_token_url='http://www.openstreetmap.org/oauth/request_token',
+        access_token_url='http://www.openstreetmap.org/oauth/access_token',
+        authorize_url='http://www.openstreetmap.org/oauth/authorize',
+        base_url='http://api.openstreetmap.org/api/0.6/')

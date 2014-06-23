@@ -1,26 +1,17 @@
 from osmapi import OsmApi
+import xml.dom.minidom
 
 
 class OsmApiClient(object):
 
-    def __init__(self, username, password):
-        self.__connection = OsmApi(username=username, password=password, api=self.__api_endpoint)
+    def __init__(self, session):
+        self.__connection = session
 
     __connection = None
 
     __api_endpoint = "api.openstreetmap.org"
 
     __default_comment = "Updated by osmhunter app."
-
-    def get_way(self, id: int):
-        """GET a way by id
-        :Parameters:
-            - `id` - osm id of way
-
-        :Return:
-            dict with waydata
-        """
-        return self.__connection.WayGet(id)
 
     def update_way(self, id: int, data: dict):
         """Simple method to update ways
@@ -51,3 +42,12 @@ class OsmApiClient(object):
         self.__connection.ChangesetClose()
 
         return changeset
+
+    def get_user_details(self):
+        response = self.__connection.get("user/details.json")   
+        data = xml.dom.minidom.parseString(response.text)
+        data = data.getElementsByTagName("osm")[0]
+        data = data.getElementsByTagName("user")[0]
+        location = data.getElementsByTagName("home")[0].attributes
+        return {"id": data.attributes["id"].value, "display_name": data.attributes["display_name"].value, "image": data.getElementsByTagName("img")[0].attributes["href"].value,
+         "location": {"lat": location["lat"].value, "lon": location["lon"].value }}

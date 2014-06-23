@@ -10,5 +10,6 @@ pyflakes==0.8.1
 pymongo==2.7.1
 rauth==0.7.0
 requests==2.3.0
+sqlalchemy
 xmltodict==0.9.0
 https://github.com/geoio/osmapi/archive/develop.zip

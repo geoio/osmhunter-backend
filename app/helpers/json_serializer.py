@@ -31,4 +31,3 @@ class JSONAPIPlugin(object):
                 return json_response
             return rv
         return wrapper
-        

@@ -8,8 +8,8 @@ from classes.FormGenerator import FormGenerator
 from helpers.geo_helpers import reverse_geocode
 from helpers.json_serializer import JSONAPIPlugin
 from helpers.utils import APIError
-from models.OsmApiClient import OsmApiClient
-from models.OverpassApi import OverpassApi
+from classes.OsmApiClient import OsmApiClient
+from classes.OverpassApi import OverpassApi
 
 
 

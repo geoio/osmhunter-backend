@@ -1,6 +1,9 @@
 import subprocess
 import logging
 
+from rauth import OAuth1Service
+
+
 
 APP_NAME = "address-suggestion"
 
@@ -114,7 +117,7 @@ EDIT_FIELDS = [
                     },
                     {
                         "value": "yes",
-                        "label": "yes",
+                        "label": "building",
                     },
                     {
                         "value": "cafe",
@@ -123,6 +126,10 @@ EDIT_FIELDS = [
                     {
                         "value": "restaurant",
                         "label": "restaurant",
+                    },
+                    {
+                        "value": "terrace",
+                        "label": "terrace",
                     }
                 ],
         "prefilled": False
@@ -131,3 +138,17 @@ EDIT_FIELDS = [
 
 
 ]
+
+
+
+DB_CONNECTION = "sqlite:///test.db"
+
+
+OSM_OAUTH = OAuth1Service(
+    name='osm',
+    consumer_key='',
+    consumer_secret='',
+    request_token_url='http://www.openstreetmap.org/oauth/request_token',
+    access_token_url='http://www.openstreetmap.org/oauth/access_token',
+    authorize_url='http://www.openstreetmap.org/oauth/authorize',
+    base_url='http://api.openstreetmap.org/api/0.6')

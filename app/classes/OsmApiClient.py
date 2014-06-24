@@ -49,9 +49,9 @@ class OsmApiClient(object):
 
         for tag, value in tags.items():
             if tag in way["tag"]:
-                if value != way["tag"][tag]:
+                if value != way["tag"][tag] and value is not None:
                     way["tag"][tag] = value
-            else:
+            elif value is not None:
                 way["tag"][tag] = value
 
         way["changeset"] = changeset

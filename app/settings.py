@@ -19,7 +19,7 @@ DEBUG = True
 BOTTLE = {
 
     "host": "localhost",
-    "port": 8060,
+    "port": 8064,
     "debug": DEBUG,
     "reloader": DEBUG
 }
@@ -29,109 +29,122 @@ EDIT_FIELDS = [
 
     {
         "type": "text",
-                "name": "name",
-                "label": "name",
-                "prefilled": False
+        "name": "name",
+        "label": "name",
+        "prefilled": False,
+        "allow_empty": True
     },
 
     {
         "type": "text",
-                "name": "addr:street",
-                "label": "street",
-                "prefilled": True
+        "name": "addr:street",
+        "label": "street",
+        "prefilled": True,
+        "allow_empty": True
     },
     {
         "type": "text",
-                "name": "addr:housenumber",
-                "label": "housenumber",
-                "prefilled": False
+        "name": "addr:housenumber",
+        "label": "housenumber",
+        "prefilled": False,
+        "allow_empty": True
     },
     {
         "type": "text",
-                "name": "addr:city",
-                "label": "city",
-                "prefilled": True
+        "name": "addr:city",
+        "label": "city",
+        "prefilled": True,
+        "allow_empty": True
     },
     {
         "type": "text",
-                "name": "addr:postcode",
-                "label": "postcode",
-                "prefilled": True
+        "name": "addr:postcode",
+        "label": "postcode",
+        "prefilled": True,
+        "allow_empty": True
     },
     {
         "type": "url",
-                "name": "website",
-                "label": "website",
-                "prefilled": False
+        "name": "website",
+        "label": "website",
+        "prefilled": False,
+        "allow_empty": True
     },
     {
         "type": "phone",
-                "name": "phone",
-                "label": "phone",
-                "prefilled": False
+        "name": "phone",
+        "label": "phone",
+        "prefilled": False,
+        "allow_empty": True
     },
     {
         "type": "select",
-                "name": "wheelchair",
-                "label": "wheelchair",
-                "options": [
-                        {
-                            "value": "yes",
-                            "label": "yes",
-                        },
-                    {
-                        "value": "no",
-                        "label": "no",
-                    },
-                    {
-                        "value": "limited",
-                        "label": "limited",
-                    }
-                ],
-        "prefilled": False
+        "name": "wheelchair",
+        "label": "wheelchair",
+        "options": [
+                {
+                    "value": "yes",
+                    "label": "yes",
+                },
+            {
+                "value": "no",
+                "label": "no",
+            },
+            {
+                "value": "limited",
+                "label": "limited",
+            }
+        ],
+        "prefilled": False,
+        "allow_empty": True
     },
     {
         "type": "select",
-                "name": "building",
-                "label": "type",
-                "options": [
-                        {
-                            "value": "house",
-                            "label": "house",
-                        },
-                    {
-                        "value": "apartments",
-                        "label": "apartments",
-                    },
-                    {
-                        "value": "commercial",
-                        "label": "commercial",
-                    },
-                    {
-                        "value": "industrial",
-                        "label": "industrial",
-                    },
-                    {
-                        "value": "residential",
-                        "label": "residential",
-                    },
-                    {
-                        "value": "yes",
-                        "label": "building",
-                    },
-                    {
-                        "value": "cafe",
-                        "label": "cafe",
-                    },
-                    {
-                        "value": "restaurant",
-                        "label": "restaurant",
-                    },
-                    {
-                        "value": "terrace",
-                        "label": "terrace",
-                    }
-                ],
+        "name": "building",
+        "label": "type",
+        "allow_empty": True,
+        "options": [
+            {
+                "value": "house",
+                "label": "house",
+            },
+            {
+                "value": "apartments",
+                "label": "apartments",
+            },
+            {
+                "value": "commercial",
+                "label": "commercial",
+            },
+            {
+                "value": "industrial",
+                "label": "industrial",
+            },
+            {
+                "value": "residential",
+                "label": "residential",
+            },
+            {
+                "value": "yes",
+                "label": "building",
+            },
+            {
+                "value": "cafe",
+                "label": "cafe",
+            },
+            {
+                "value": "restaurant",
+                "label": "restaurant",
+            },
+            {
+                "value": "terrace",
+                "label": "terrace",
+            },
+            {
+                "value": "garage",
+                "label": "garage"
+            }
+        ],
         "prefilled": False
     },
 

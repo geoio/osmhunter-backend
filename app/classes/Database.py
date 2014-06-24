@@ -52,3 +52,4 @@ class OAuthCache(Base):
     id = Column(Integer, primary_key=True)
     request_token = Column(String)
     request_token_secret = Column(String)
+    uuid = Column(String)

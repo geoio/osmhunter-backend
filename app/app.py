@@ -1,7 +1,8 @@
 from datetime import datetime
-import logging
 import json
+import logging
 import settings
+import uuid
 
 from bottle import route, run, template, Bottle, request, static_file
 import sqlalchemy
@@ -258,10 +259,11 @@ def get_oauth_redirect_url():
     auth = OAuthCache()
     auth.request_token = request_token
     auth.request_token_secret = request_token_secret
+    auth.uuid = str(uuid.uuid4())
     session.add(auth)
     session.commit()
 
-    return {"status": "OK", "result": { "redirect_url": authorize_url, "session_id": auth.id}}
+    return {"status": "OK", "result": { "redirect_url": authorize_url, "session_id": auth.uuid}}
 
 
 @app.route('/user/signup/', ["POST"])
@@ -287,7 +289,7 @@ def signup_user():
 
 
     if "session_id" in request_body:
-        session_id = int(request_body["session_id"])
+        session_id = request_body["session_id"]
     else:
         raise APIError("Need param session_id")
 
@@ -301,7 +303,7 @@ def signup_user():
     try:
         
         session = PgSession()    
-        oauth_session = session.query(OAuthCache).filter(OAuthCache.id == session_id).first()
+        oauth_session = session.query(OAuthCache).filter(OAuthCache.uuid == session_id).first()
         access_token, access_token_secret = osm_auth_client.get_access_token(oauth_session.request_token,
                                    oauth_session.request_token_secret,
                                    method='POST',
@@ -331,7 +333,7 @@ def signup_user():
     session.add(user)
     session.commit()    
     
-    return {"status": "OK", "result": { "apikey": user.apikey, "name": user.name, "osm_id": user.osm_id, "id": user.id}} 
+    return {"status": "OK", "result": { "apikey": user.apikey, "name": user.name, "osm_id": user.osm_id, "id": user.id, "session_id": session_id}} 
 
 
 @app.route('/user/')

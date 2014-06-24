@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 import json
 import settings
@@ -5,6 +6,7 @@ import settings
 from bottle import route, run, template, Bottle, request, static_file
 import sqlalchemy
 import sqlalchemy.orm
+from sqlalchemy.sql import func
 
 from classes.FormGenerator import FormGenerator
 from helpers.geo_helpers import reverse_geocode
@@ -12,7 +14,7 @@ from helpers.json_serializer import JSONAPIPlugin
 from helpers.utils import APIError, with_db_session, generate_apikey
 from classes.OsmApiClient import OsmApiClient
 from classes.OverpassApi import OverpassApi
-from classes.Database import Base as database, OAuthCache, User
+from classes.Database import Base as database, OAuthCache, User, Points
 
 # Logging stuff
 if settings.DEBUG:
@@ -211,7 +213,15 @@ def update_building(id: int):
     except Exception:
         raise APIError("Unknown error while saving")
 
-    return {"status": "OK", "result": result}
+
+    point = Points()
+    point.user_id = user.id
+    point.count = 1
+    point.changeset = result
+    session.add(point)
+    session.commit()
+
+    return {"status": "OK", "result": {"changeset_id": result}}
 
 
 @app.route('/reverse-geocode/')
@@ -312,13 +322,14 @@ def signup_user():
         user.oauth_access_token = access_token
         user.oauth_access_token_secret = access_token_secret
         user.apikey = generate_apikey()
-        session.add(user)
-        session.commit()
+
     else:
         user.name = osm_user_data["display_name"]
         user.oauth_access_token = access_token
         user.oauth_access_token_secret = access_token_secret
-        # TODO(felix) save updated object
+
+    session.add(user)
+    session.commit()    
     
     return {"status": "OK", "result": { "apikey": user.apikey, "name": user.name, "osm_id": user.osm_id, "id": user.id}} 
 
@@ -342,6 +353,7 @@ def user_details():
     oauth_session = osm_auth_client.get_session((user.oauth_access_token, user.oauth_access_token_secret))
     osm_api = OsmApiClient(oauth_session)
     osm_user_data = osm_api.get_user_details()
+    osm_user_data["points"] = user.points_sum
 
     return {"status": "OK", "result": osm_user_data}
 

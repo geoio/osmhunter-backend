@@ -25,6 +25,13 @@ class User(Base):
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
+    @property
+    def points_sum(self):
+        c = 0
+        for point in self.points:
+            c += point.count
+        return c
+
 
 class Points(Base):
     __tablename__ = "points"
@@ -32,7 +39,7 @@ class Points(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     count = Column(Integer)
-
+    changeset = Column(Integer)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     user = relationship("User", backref=backref("points", order_by=id))

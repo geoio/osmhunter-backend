@@ -161,8 +161,10 @@ def get_building_form(id: int):
         :Parameters:
         - `id` - the osm id of the building
     """
-
-    way = overpass.get_by_osm_id(id)
+    try:
+        way = overpass.get_by_osm_id(id)
+    except Exception as e:
+        raise APIError("Building not found", status=404)
     form = FormGenerator(settings.EDIT_FIELDS, way)
 
     return {"status": "OK", "result": form.generate()}
@@ -187,12 +189,18 @@ def update_building(id: int):
     if user is None:
         raise APIError("Wrong/unknown apikey")
 
-    osm_auth_client = settings.get_osm_auth()
-    oauth_session = osm_auth_client.get_session((user.oauth_access_token, user.oauth_access_token_secret))
+    try:
+        osm_auth_client = settings.get_osm_auth()
+        oauth_session = osm_auth_client.get_session((user.oauth_access_token, user.oauth_access_token_secret))
+    except Exception as e:
+        raise APIError("Authentication failed", status=401)
 
     api = OsmApiClient(oauth_session)
 
-    way = overpass.get_by_osm_id(id)
+    try:
+        way = overpass.get_by_osm_id(id)
+    except Exception as e:
+        raise APIError("Building not found", status=404)
 
     data = request.body.read().decode("utf-8")
 
@@ -352,9 +360,12 @@ def user_details():
     if user is None:
         raise APIError("Wrong/unknown apikey")
 
-    oauth_session = osm_auth_client.get_session((user.oauth_access_token, user.oauth_access_token_secret))
-    osm_api = OsmApiClient(oauth_session)
-    osm_user_data = osm_api.get_user_details()
+    try:
+        oauth_session = osm_auth_client.get_session((user.oauth_access_token, user.oauth_access_token_secret))
+        osm_api = OsmApiClient(oauth_session)
+        osm_user_data = osm_api.get_user_details()
+    except Exception as e:
+        raise APIError("Authentication failed", status=401)
     osm_user_data["points"] = user.points_sum
 
     return {"status": "OK", "result": osm_user_data}

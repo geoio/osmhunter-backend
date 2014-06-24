@@ -33,7 +33,7 @@ class OsmApiClient(object):
             Changeset Id
         """
         # TODO(felix): test this method
-        # TODO(felix): extend osmapi lib to use ist with oauth
+        # TODO(felix): extend osmapi lib to use it with oauth
 
         osmapi = OsmApi(api=self.__api_endpoint)
 
@@ -62,7 +62,12 @@ class OsmApiClient(object):
         return changeset
 
     def get_user_details(self):
-        response = self.__connection.get("user/details.json")
+        """Get details about logged in user
+            :Returns:
+                A dict with userdata
+        
+        """
+        response = self.__connection.get("user/details")
         data = xml.dom.minidom.parseString(response.text)
         data = data.getElementsByTagName("osm")[0]
         data = data.getElementsByTagName("user")[0]

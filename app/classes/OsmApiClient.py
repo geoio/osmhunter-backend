@@ -13,6 +13,17 @@ class OsmApiClient(object):
 
     __default_comment = "Updated by osmhunter app."
 
+    def get_way(self, id: int):
+        """GET a way by id
+        :Parameters:
+            - `id` - osm id of way
+
+        :Return:
+            dict with waydata
+        """
+        osmapi = OsmApi(api=self.__api_endpoint)
+        return osmapi.WayGet(id)
+
     def update_way(self, id: int, data: dict):
         """Simple method to update ways
         :Parameters:
@@ -22,9 +33,15 @@ class OsmApiClient(object):
             Changeset Id
         """
         # TODO(felix): test this method
-        changeset = self.__connection.ChangesetCreate({"comment": self.__default_comment})
+        # TODO(felix): extend osmapi lib to use ist with oauth
 
+        osmapi = OsmApi(api=self.__api_endpoint)
+
+        changeset_create_request = osmapi._XmlBuild("changeset", {"tag": {"comment": str(self.__default_comment)}})
+        changeset = self.__connection.put("changeset/create", headers={"Content-Type": "application/xml"}, data=changeset_create_request.decode("utf-8"))
+        changeset = int(changeset.text)
         way = self.get_way(id)
+        osmapi._CurrentChangesetId = changeset
 
         # TODO(felix): support not only tags
 
@@ -37,17 +54,18 @@ class OsmApiClient(object):
             else:
                 way["tag"][tag] = value
 
-        self.__connection.WayUpdate(way)
-
-        self.__connection.ChangesetClose()
+        way["changeset"] = changeset
+        way_change_request = osmapi._XmlBuild("way", way).decode("utf-8")
+        self.__connection.put("way/%s" % str(id), headers={"Content-Type": "application/xml"}, data=way_change_request)
+        self.__connection.put("changeset/%s/close" % str(id), data={})
 
         return changeset
 
     def get_user_details(self):
-        response = self.__connection.get("user/details.json")   
+        response = self.__connection.get("user/details.json")
         data = xml.dom.minidom.parseString(response.text)
         data = data.getElementsByTagName("osm")[0]
         data = data.getElementsByTagName("user")[0]
         location = data.getElementsByTagName("home")[0].attributes
         return {"id": data.attributes["id"].value, "display_name": data.attributes["display_name"].value, "image": data.getElementsByTagName("img")[0].attributes["href"].value,
-         "location": {"lat": location["lat"].value, "lon": location["lon"].value }}
+                "location": {"lat": location["lat"].value, "lon": location["lon"].value}}

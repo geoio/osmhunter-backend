@@ -153,7 +153,7 @@ def get_building(id: int):
 
 
 @app.route('/buildings/<id>/edit-form/', ['GET'])
-def get_building_form(id: int, db):
+def get_building_form(id: int):
     """GET the edit form for a building
         :Parameters:
         - `id` - the osm id of the building
@@ -166,7 +166,7 @@ def get_building_form(id: int, db):
 
 
 @app.route('/buildings/<id>/', ['PUT'])
-def update_building(id: int, db):
+def update_building(id: int):
     """GET a building by id
         :Parameters:
         - `id` - the osm id of the building
@@ -175,14 +175,19 @@ def update_building(id: int, db):
         - `data_payload`- the changed way data as payload
     """
 
-    # TODO(felix): implement a serious authentication like oauth
-    #username = request.query.getunicode("username")
-    #password = request.query.getunicode("password")
+    apikey = request.query.getunicode("apikey")
+    if not apikey:
+        raise APIError("Need param apikey", status=401)
+    session = PgSession()
 
-    if not username or not password:
-        return APIError(body="Need params username and password")
+    user = session.query(User).filter(User.apikey == apikey).first()
+    if user is None:
+        raise APIError("Wrong/unknown apikey")
 
-    api = OsmApiClient(session)
+    osm_auth_client = settings.get_osm_auth()
+    oauth_session = osm_auth_client.get_session((user.oauth_access_token, user.oauth_access_token_secret))
+
+    api = OsmApiClient(oauth_session)
 
     way = overpass.get_by_osm_id(id)
 
@@ -199,6 +204,8 @@ def update_building(id: int, db):
     if type(request_body) is not dict:
         raise APIError("Invalid request")
 
+
+    result = api.update_way(id, request_body)
     try:
         result = api.update_way(id, request_body)
     except Exception:

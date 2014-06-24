@@ -68,8 +68,8 @@ class OsmApiClient(object):
         data = data.getElementsByTagName("user")[0]
         location = data.getElementsByTagName("home")
         if len(location) > 0:
-            location = location[0].attributes
+            location = {"lat": location[0].attributes["lat"].value, "lon": location[0].attributes["lon"].value}
         else:
             location = {"lat": None, "lon": None}
         return {"id": data.attributes["id"].value, "display_name": data.attributes["display_name"].value, "image": data.getElementsByTagName("img")[0].attributes["href"].value,
-                "location": {"lat": location["lat"].value, "lon": location["lon"].value}}
+                "location": {"lat": location["lat"], "lon": location["lon"]}}

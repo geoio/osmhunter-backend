@@ -66,6 +66,10 @@ class OsmApiClient(object):
         data = xml.dom.minidom.parseString(response.text)
         data = data.getElementsByTagName("osm")[0]
         data = data.getElementsByTagName("user")[0]
-        location = data.getElementsByTagName("home")[0].attributes
+        location = data.getElementsByTagName("home")
+        if len(location) > 0:
+            location = location[0].attributes
+        else:
+            location = {"lat": None, "lon": None}
         return {"id": data.attributes["id"].value, "display_name": data.attributes["display_name"].value, "image": data.getElementsByTagName("img")[0].attributes["href"].value,
                 "location": {"lat": location["lat"].value, "lon": location["lon"].value}}

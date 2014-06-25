@@ -17,6 +17,8 @@ class OverpassApi(object):
 
     __overpass_api_url = "http://www.overpass-api.de/api/interpreter"
 
+    __filter_building_types = "garage|transformer_tower|sty|stable|shed|roof|hut|hangar|greenhouse|garages|farm_auxiliary|cowshed|cabin|bunker|bridge|barn|static_caravan|houseboat|terrace|train_station"
+
     def get_buildings_without_housenumber_bbox(self, bbox: dict, user_location=None) -> list:
         """GET `list` of shapefiles (mostly buildings) without housenumbers in area
             
@@ -36,7 +38,7 @@ class OverpassApi(object):
             <query type="way">
               <has-kv k="building"/>
               <has-kv k="addr:housenumber" modv="not" regv="."/>
-              <has-kv k="building" modv="not" regv="garage|transformer_tower|sty|stable|shed|roof|hut|hangar|greenhouse|garages|farm_auxiliary|cowshed|cabin|bunker|bridge|barn|static_caravan|houseboat|terrace"/>
+              <has-kv k="building" modv="not" regv="%s"/>
               <bbox-query  s="%s" w="%s" n="%s" e="%s"/>
             </query>
           </union>
@@ -44,7 +46,7 @@ class OverpassApi(object):
           <recurse type="down"/>
           <print mode="skeleton" order="quadtile"/>
         </osm-script>
-        """ % (bbox["south"], bbox["west"], bbox["north"], bbox["east"])
+        """ % (self.__filter_building_types, bbox["south"], bbox["west"], bbox["north"], bbox["east"])
 
         # calculate centroid of boundingbox for result sorting
         location = calculate_centroid([{"lat": bbox["south"], "lon": bbox["west"]}, {"lat": bbox["south"], "lon": bbox["east"]}, {
@@ -77,7 +79,7 @@ class OverpassApi(object):
             <query type="way">
               <has-kv k="building"/>
               <has-kv k="addr:housenumber" modv="not" regv="."/>
-              <has-kv k="building" modv="not" regv="garage|transformer_tower|sty|stable|shed|roof|hut|hangar|greenhouse|garages|farm_auxiliary|cowshed|cabin|bunker|bridge|barn|static_caravan|houseboat|terrace|train_station"/>
+              <has-kv k="building" modv="not" regv="%s"/>
               <around lat="%s" lon="%s" radius="%s"/>
             </query>
           </union>
@@ -85,7 +87,7 @@ class OverpassApi(object):
           <recurse type="down"/>
           <print mode="skeleton" order="quadtile"/>
         </osm-script>
-        """ % (lat, lon, radius)
+        """ % (self.__filter_building_types, lat, lon, radius)
 
         results = self.__format_api_result(requests.post(self.__overpass_api_url, data={"data": query}).json()["elements"])
 

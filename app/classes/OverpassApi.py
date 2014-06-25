@@ -17,11 +17,12 @@ class OverpassApi(object):
 
     __overpass_api_url = "http://www.overpass-api.de/api/interpreter"
 
-    def get_buildings_without_housenumber_bbox(self, bbox: dict) -> list:
+    def get_buildings_without_housenumber_bbox(self, bbox: dict, user_location=None) -> list:
         """GET `list` of shapefiles (mostly buildings) without housenumbers in area
             
             :Properties:
                 - `bbox` - the searcharea
+                - `user_location` - the location of the user (optional - if the user location isn´t the centroid of the `bbox`)
 
 
             :Returns:
@@ -50,6 +51,9 @@ class OverpassApi(object):
                                       "lat": bbox["north"], "lon": bbox["east"]}, {"lat": bbox["north"], "lon": bbox["west"]}])
 
         results = self.__format_api_result(requests.post(self.__overpass_api_url, data={"data": query}).json()["elements"])
+        #when user_location isnt centroid of bundingbox
+        if user_location is not None:
+          location = user_location
         results = self.__calculate_distance(results, location)
         return self.__sort_by_distance(results)
 

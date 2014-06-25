@@ -56,6 +56,8 @@ def get_buildings():
         - `south` - bbox 
         - `east` - bbox 
         - `west` - bbox 
+        - `lat` - latitude - user position (if not center of bunding box)
+        - `lon` - longitude - user position (if not center of bunding box)
         - `limit` - max of shapes in this bbox
 
     """
@@ -67,6 +69,13 @@ def get_buildings():
         pass
     else:
         return APIError(body="need bbox (params north, south, east, west)")
+
+    user_location["lat"] = request.query.getunicode("lat")
+    user_location["lon"] = request.query.getunicode("lon")
+
+    if user_location["lat"] and user_location["lon"]:
+        user_location["lat"] = float(user_location["lat"])
+        user_location["lon"] = float(user_location["lon"])
 
     bbox["north"] = float(bbox["north"])
     bbox["south"] = float(bbox["south"])
@@ -83,7 +92,7 @@ def get_buildings():
     if limit > 999:
         limit = 999
 
-    results = overpass.get_buildings_without_housenumber_bbox(bbox)
+    results = overpass.get_buildings_without_housenumber_bbox(bbox, user_location=user_location)
     return {"status": "OK", "results": results[:limit]}
 
 

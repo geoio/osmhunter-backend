@@ -73,7 +73,7 @@ class OverpassApi(object):
             <query type="way">
               <has-kv k="building"/>
               <has-kv k="addr:housenumber" modv="not" regv="."/>
-              <has-kv k="building" modv="not" regv="garage|transformer_tower|sty|stable|shed|roof|hut|hangar|greenhouse|garages|farm_auxiliary|cowshed|cabin|bunker|bridge|barn|static_caravan|houseboat|terrace"/>
+              <has-kv k="building" modv="not" regv="garage|transformer_tower|sty|stable|shed|roof|hut|hangar|greenhouse|garages|farm_auxiliary|cowshed|cabin|bunker|bridge|barn|static_caravan|houseboat|terrace|train_station"/>
               <around lat="%s" lon="%s" radius="%s"/>
             </query>
           </union>

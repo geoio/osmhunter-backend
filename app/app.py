@@ -372,6 +372,25 @@ def user_details():
 
 
 
+@app.route('/user/leaderboard/')
+def leaderboard():
+    """Get the top X users 
+        :Parameters:
+            - `limit` - max users (default 100)
+
+       :Returns:
+            a `list` of users
+    """
+    session = PgSession()
+    user = session.query(Points and func.sum(Points.count).label("total_score")).group_by(Points.user_id).all()
+
+    
+
+    return {"status": "OK", "result": user}
+
+
+
+
 
     
 

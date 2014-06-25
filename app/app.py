@@ -12,7 +12,7 @@ from sqlalchemy.sql import func
 from classes.FormGenerator import FormGenerator
 from helpers.geo_helpers import reverse_geocode
 from helpers.json_serializer import JSONAPIPlugin
-from helpers.utils import APIError, with_db_session, generate_apikey
+from helpers.utils import APIError, with_db_session, generate_apikey, StripPathMiddleware
 from classes.OsmApiClient import OsmApiClient
 from classes.OverpassApi import OverpassApi
 from classes.Database import Base as database, OAuthCache, User, Points
@@ -48,7 +48,7 @@ def show_version():
     return {"status": "OK", "results": {"version": settings.GIT_VERSION, "debug": settings.DEBUG}}
 
 
-@app.route('/buildings/')
+@app.route('/buildings')
 def get_buildings():
     """GET building in specific bbox
         :Parameters:
@@ -87,7 +87,7 @@ def get_buildings():
     return {"status": "OK", "results": results[:limit]}
 
 
-@app.route('/buildings/nearby/')
+@app.route('/buildings/nearby')
 def get_buildings_nearby():
     """GET building in specific bbox
         :Parameters:
@@ -144,7 +144,7 @@ def get_buildings_nearby():
         return {"status": "OK", "results": results}
 
 
-@app.route('/buildings/<id>/', ['GET'])
+@app.route('/buildings/<id>', ['GET'])
 def get_building(id: int):
     """GET a building by id
         :Parameters:
@@ -155,7 +155,7 @@ def get_building(id: int):
     return {"status": "OK", "result": way}
 
 
-@app.route('/buildings/<id>/edit-form/', ['GET'])
+@app.route('/buildings/<id>/edit-form', ['GET'])
 def get_building_form(id: int):
     """GET the edit form for a building
         :Parameters:
@@ -170,7 +170,7 @@ def get_building_form(id: int):
     return {"status": "OK", "result": form.generate()}
 
 
-@app.route('/buildings/<id>/', ['PUT'])
+@app.route('/buildings/<id>', ['PUT'])
 def update_building(id: int):
     """GET a building by id
         :Parameters:
@@ -233,7 +233,7 @@ def update_building(id: int):
     return {"status": "OK", "result": {"changeset_id": result}}
 
 
-@app.route('/reverse-geocode/')
+@app.route('/reverse-geocode')
 def reverse_geocode_api():
     """Reverse Geocode a shape, to prefill fields like street and city
         :Parameters:
@@ -256,7 +256,7 @@ def reverse_geocode_api():
 # Authentication Stuff
 
 
-@app.route('/user/signup/', ["GET"])
+@app.route('/user/signup', ["GET"])
 def get_oauth_redirect_url():
     """Open an authetication session and get a redirect url"""
     
@@ -274,7 +274,7 @@ def get_oauth_redirect_url():
     return {"status": "OK", "result": { "redirect_url": authorize_url, "session_id": auth.uuid}}
 
 
-@app.route('/user/signup/', ["POST"])
+@app.route('/user/signup', ["POST"])
 def signup_user():
     """Creates an User (needs an oauth_token)
         - `session_id` - the authentication session id retrieved from /user/signup/
@@ -344,7 +344,7 @@ def signup_user():
     return {"status": "OK", "result": { "apikey": user.apikey, "name": user.name, "osm_id": user.osm_id, "id": user.id, "session_id": session_id}} 
 
 
-@app.route('/user/')
+@app.route('/user')
 def user_details():
     """Get Details about the logged in user
             :Parameters:
@@ -372,7 +372,7 @@ def user_details():
 
 
 
-@app.route('/user/leaderboard/')
+@app.route('/user/leaderboard')
 def leaderboard():
     """Get the top X users 
         :Parameters:
@@ -423,7 +423,7 @@ def leaderboard():
 
 
     
-
+app = StripPathMiddleware(app)
     
     
     

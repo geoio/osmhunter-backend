@@ -70,12 +70,15 @@ def get_buildings():
     else:
         return APIError(body="need bbox (params north, south, east, west)")
 
+    user_location = {}
     user_location["lat"] = request.query.getunicode("lat")
     user_location["lon"] = request.query.getunicode("lon")
 
     if user_location["lat"] and user_location["lon"]:
         user_location["lat"] = float(user_location["lat"])
         user_location["lon"] = float(user_location["lon"])
+    else:
+        user_location = None
 
     bbox["north"] = float(bbox["north"])
     bbox["south"] = float(bbox["south"])

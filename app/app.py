@@ -381,12 +381,42 @@ def leaderboard():
        :Returns:
             a `list` of users
     """
+
+    apikey = request.query.getunicode("apikey")
+    if not apikey:
+        raise APIError("Need param apikey", status=401)
     session = PgSession()
-    user = session.query(Points and func.sum(Points.count).label("total_score")).group_by(Points.user_id).all()
+    osm_auth_client = settings.get_osm_auth()
+
+    user_session = session.query(User).filter(User.apikey == apikey).first()
+    if user_session is None:
+        raise APIError("Wrong/unknown apikey")
+
+
+    limit = request.query.getunicode("limit")
+    if limit:
+        limit = int(limit)
+        if limit > 500 or limit < 1:
+            limit = 100
+    else:
+        limit = 100
+
+
+
+    session = PgSession()
+    users = session.query(User, func.sum(Points.count).label("total_score")).join(Points).group_by(Points.user_id).order_by(sqlalchemy.desc("total_score")).limit(limit).all()
 
     
+    leaderboard = []
+    for user in users:
+        myself = False
+        if user[0].id == user_session.id:
+            myself = True
+        leaderboard.append({"username": user[0].name, "user_id": user[0].id, "points": user[1], "myself": myself })
+         
 
-    return {"status": "OK", "result": user}
+
+    return {"status": "OK", "result": leaderboard}
 
 
 

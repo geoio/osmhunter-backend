@@ -45,11 +45,7 @@ class OsmApiClient(object):
         osmapi = OsmApi(api=self.__api_endpoint)
 
         changeset_create_request = osmapi._XmlBuild("changeset", {"tag": {"comment": str(self.__default_comment)}})
-        
-        if changeset_create_request.status_code == 401:
-            raise APIError("Authentication failed!", status=401)
-
-        changeset = self.__connection.put("changeset/create", headers={"Content-Type": "application/xml"}, data=changeset_create_request.decode("utf-8"))
+              changeset = self.__connection.put("changeset/create", headers={"Content-Type": "application/xml"}, data=changeset_create_request.decode("utf-8"))
         try:
             changeset = int(changeset.text)
         except ValueError:
@@ -82,8 +78,6 @@ class OsmApiClient(object):
         
         """
         response = self.__connection.get("user/details")
-        if response.status_code == 401:
-            raise APIError("Authentication failed!", status=401)
         data = xml.dom.minidom.parseString(response.text)
         data = data.getElementsByTagName("osm")[0]
         data = data.getElementsByTagName("user")[0]

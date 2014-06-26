@@ -344,11 +344,13 @@ def signup_user():
         user.oauth_access_token = access_token
         user.oauth_access_token_secret = access_token_secret
         user.apikey = generate_apikey()
+        user.image_url = osm_user_data["image"]
 
     else:
         user.name = osm_user_data["display_name"]
         user.oauth_access_token = access_token
         user.oauth_access_token_secret = access_token_secret
+        user.image_url = osm_user_data["image"]
 
     session.add(user)
     session.commit()    
@@ -424,11 +426,22 @@ def leaderboard():
         myself = False
         if user[0].id == user_session.id:
             myself = True
-        leaderboard.append({"username": user[0].name, "user_id": user[0].id, "points": user[1], "myself": myself })
+        leaderboard.append({"username": user[0].name, "user_id": user[0].id, "image": user[0].image_url, "points": user[1], "myself": myself })
          
 
 
     return {"status": "OK", "result": leaderboard}
+
+
+@app.route('/score')
+def score():
+    """Returns the total edits count"""
+    session = PgSession()
+    count = session.query(func.sum(Points.count).label("total_score")).first()
+    return {"status": "OK", "result": {"count": count[0]}}
+
+
+
 
 
 

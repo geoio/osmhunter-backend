@@ -22,6 +22,8 @@ class User(Base):
     oauth_access_token = Column(String)
     oauth_access_token_secret = Column(String)
     apikey = Column(String)
+    #caching for Leaderboard
+    image_url = Column(String)
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 

@@ -381,7 +381,7 @@ def user_details():
 
     user = session.query(User).filter(User.apikey == apikey).first()
     if user is None:
-        raise APIError("Wrong/unknown apikey")
+        raise APIError("Wrong/unknown apikey", status=401)
 
     try:
         oauth_session = osm_auth_client.get_session((user.oauth_access_token, user.oauth_access_token_secret))
@@ -413,7 +413,7 @@ def leaderboard():
 
     user_session = session.query(User).filter(User.apikey == apikey).first()
     if user_session is None:
-        raise APIError("Wrong/unknown apikey")
+        raise APIError("Wrong/unknown apikey", status=401)
 
 
     limit = request.query.getunicode("limit")

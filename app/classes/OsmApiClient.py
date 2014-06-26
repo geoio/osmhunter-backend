@@ -45,7 +45,7 @@ class OsmApiClient(object):
         osmapi = OsmApi(api=self.__api_endpoint)
 
         changeset_create_request = osmapi._XmlBuild("changeset", {"tag": {"comment": str(self.__default_comment)}})
-              changeset = self.__connection.put("changeset/create", headers={"Content-Type": "application/xml"}, data=changeset_create_request.decode("utf-8"))
+        changeset = self.__connection.put("changeset/create", headers={"Content-Type": "application/xml"}, data=changeset_create_request.decode("utf-8"))
         try:
             changeset = int(changeset.text)
         except ValueError:

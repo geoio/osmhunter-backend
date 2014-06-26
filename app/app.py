@@ -427,7 +427,7 @@ def leaderboard():
 
 
     session = PgSession()
-    users = session.query(User, func.sum(Points.count).label("total_score")).join(Points).group_by(Points.user_id).order_by(sqlalchemy.desc("total_score")).limit(limit).all()
+    users = session.query(User, func.sum(Points.count).label("total_score")).join(Points).group_by(User.id).order_by(sqlalchemy.desc("total_score")).limit(limit).all()
 
     
     leaderboard = []

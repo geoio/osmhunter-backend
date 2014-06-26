@@ -1,5 +1,12 @@
+import sys
+import os
+
 from osmapi import OsmApi
 import xml.dom.minidom
+
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+from helpers.utils import APIError
 
 
 class OsmApiClient(object):
@@ -39,7 +46,10 @@ class OsmApiClient(object):
 
         changeset_create_request = osmapi._XmlBuild("changeset", {"tag": {"comment": str(self.__default_comment)}})
         changeset = self.__connection.put("changeset/create", headers={"Content-Type": "application/xml"}, data=changeset_create_request.decode("utf-8"))
-        changeset = int(changeset.text)
+        try:
+            changeset = int(changeset.text)
+        except ValueError:
+            raise APIError("Authentication failed!", status=401)
         way = self.get_way(id)
         osmapi._CurrentChangesetId = changeset
 

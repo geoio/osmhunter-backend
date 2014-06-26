@@ -190,12 +190,17 @@ def update_building(id: int):
         - `username` - openstreetmap.org username
         - `password` - openstreetmap.org password
         - `data_payload`- the changed way data as payload
+        - `dryrun` - if set to True the changeset will not submitted to openstreetmap
     """
 
     apikey = request.query.getunicode("apikey")
+    dryrun = request.query.getunicode("dryrun")
     if not apikey:
         raise APIError("Need param apikey", status=401)
     session = PgSession()
+
+    if not dryrun:
+        dryrun = False
 
     user = session.query(User).filter(User.apikey == apikey).first()
     if user is None:
@@ -226,6 +231,10 @@ def update_building(id: int):
 
     if type(request_body) is not dict:
         raise APIError("Invalid request")
+
+
+    if dryrun:
+        return {"status": "OK", "result": {"changeset_id": 12345}}
 
 
     result = api.update_way(id, request_body)

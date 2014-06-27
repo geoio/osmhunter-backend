@@ -16,7 +16,8 @@ class FormGenerator(object):
         self.__form_fields = form_fields
         self.__tags = way["tags"]
         location = way["centroid"]
-        self.location = {"location": location, "address": reverse_geocode(location["lat"], location["lon"])}
+        self.__location = {"location": location, "address": reverse_geocode(location["lat"], location["lon"])}
+        print(self.__location)
 
     __form_fields = []
     __tags = {}
@@ -69,8 +70,8 @@ class FormGenerator(object):
 
         if key in self.OSM_TO_NOMINATIM_MAPPING:
             for nominatim_key in self.OSM_TO_NOMINATIM_MAPPING[key]:
-                if nominatim_key in self.location["address"]:
-                    return self.location["address"][nominatim_key]
+                if nominatim_key in self.__location["address"]:
+                    return self.__location["address"][nominatim_key]
 
         return None
 
